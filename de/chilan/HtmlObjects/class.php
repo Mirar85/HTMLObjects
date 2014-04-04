@@ -1,4 +1,16 @@
 <?php
+/**
+ * This is the main file that must include when you want to use
+ * this framework. Its include the ground class "first". Every other 
+ * HTMLObject class must have it extended. 
+ *
+ * Follow classes are in this file: first, attribute, checkInput,
+ * xml, nothing, innerText, body, html
+ *
+ * @author Ulf Wohlers - Chilan.de
+ * @package de\chilan\HtmlObjects
+ */
+ 
 namespace de\chilan\HtmlObjects;
 
 use \Exception as Exception;
@@ -13,6 +25,17 @@ require_once("class_standallone.php");
 require_once("class_table.php");
 require_once("class_textelements.php");
 
+/**
+* Class first is the ground class for all HTML objects. It includes all
+* important methods for transaction with it. There also the methods for
+* proof which type of data are allowed. (PCDATA, idref, etc.)
+* Also it include the insert, insertAfter, etc. Methods
+* 
+* Class variables are $_text for simple text, $_htmlCode for the HTML Code 
+* and $_domObject as an array of HTMLobjects (The array always starts at 0 
+* and end at the length
+* @abstract
+*/
 abstract class first
 {
 	protected $_text = NULL;
@@ -33,6 +56,13 @@ abstract class first
 		}
 	}
 	
+	/**
+	* Proof if a given variable is a String and convert it when
+	* it is a string into an innerText HTML object
+	* @param $object - The varaible that will be checked
+	* @param $nonconvert [optional] - if true it will add without 
+	* 		 converting the text into html conform text. 
+	*/
 	private function is_string($object,$nonconvert = false) {
 		if ($object === null) {
 			$object = "";
@@ -51,6 +81,11 @@ abstract class first
 		return $object;
 	}
 	
+	/**
+	* Insert a HTML object into the object where it will be called
+	* Add the object at the end of an Array that starts with 0
+	* @param $object - can be an HTML obejct or an Array of objects or strings
+	*/
 	public function insert($object) {
 		
 		$object = $this->is_string($object);
@@ -71,11 +106,22 @@ abstract class first
 			$this->_domObject->add($object);
 		}
 	}
-	
+
+	/**
+	* Insert a HTML object into the object where it will be called
+	* Add the object at the start (Position 0) of an Array
+	* @param $object - can be an HTML obejct or an Array of objects or strings
+	*/	
 	public function insertFirst($object) {
 		$this->insertAfter($object,-1);
 	}
-	
+
+	/**
+	* Insert a HTML object into the object where it will be called
+	* Add the object after the given position of an Array
+	* @param $object - can be an HTML object or an Array of objects or strings
+	* @param $x - The position where it will be add after
+	*/	
 	public function insertAfter($object,$x) {
 		$object = $this->is_string($object);
 		if (is_array($object)) {
@@ -96,12 +142,22 @@ abstract class first
 			$this->_domObject->addAfter($object,$x);
 		} 
 	}
-	
+
+	/**
+	* Insert a HTML object into the object where it will be called
+	* Add the object before the given position of an Array
+	* @param $object - can be an HTML object or an Array of objects or strings
+	* @param $x - The position where it will be add before
+	*/		
 	public function insertBefor($object,$x) {
 		$this->insertAfter($object,$x-1);
 	}
-	
-//ToDo
+
+	/**
+	* Insert a HTML object into the object where it will be called
+	* HTML Code written as String will be not convert in a string
+	* @param $value - can be an HTML object or an Array of objects or strings
+	*/	
 	public function insertnonconvert($value) {
 		$value = $this->is_string($value,true);
 		if (is_array($value)) {
@@ -114,6 +170,12 @@ abstract class first
 		}
 	}
 	
+	/**
+	* Check if the HTML object are allowed to add
+	* @param $x - The element that will be proofed
+	* @return true,false
+	* @throwException - When not allowed 
+	*/
 	protected function checkIfHTMLObject($x) {
 		$htmlClass = htmlobjectlist::getAllHtmlClass();
 		if (in_array(get_class($x),$htmlClass))
@@ -126,6 +188,11 @@ abstract class first
 		return false;
 	}
 	
+	/**
+	* Convert the domObject into HTML Code
+	* @param $htmlCode - HTML Code where others will be add
+	* @return the new generated HTML code
+	*/
 	protected function convert($htmlCode) {
 		if ($this->_domObject !== null) {
 			for ($i=0;$i<$this->_domObject->getSize();$i++) {
@@ -135,100 +202,12 @@ abstract class first
 		return $htmlCode;
 	}
 	
-/*	protected function connvert($class)
-	{
-		switch (get_class($class))
-		{
-			case 'convert': convert::connvertThis();break;	
-			case 'attribute': attribute::connvertThis();break;	
-			case 'a': a::connvertThis();break;
-			case 'abbr': abbr::connvertThis();break;
-			case 'acronym': acronym::connvertThis();break;
-			case 'address': address::connvertThis();break;
-			case 'area': area::connvertThis();break;
-			case 'b': b::connvertThis();break;
-			case 'bdo': bdo::connvertThis();break;
-			case 'big': big::connvertThis();break;
-			case 'blockquote': blockquote::connvertThis();break;
-			case 'body': body::connvertThis();break;
-			case 'br': br::connvertThis();break;
-			case 'button': button::connvertThis();break;
-			case 'caption': caption::connvertThis();break;
-			case 'cite': cite::connvertThis();break;
-			case 'code': code::connvertThis();break;
-			case 'col': col::connvertThis();break;
-			case 'colgroup': colgroup::connvertThis();break;
-			case 'dd': dd::connvertThis();break;
-			case 'del': del::connvertThis();break;
-			case 'dfn': dfb::connvertThis();break;
-			case 'div': div::connvertThis();break;
-			case 'dl': dl::connvertThis();break;
-			case 'dt': dt::connvertThis();break;
-			case 'em': em::connvertThis();break;
-			case 'fieldset': fieldset::connvertThis();break;
-			case 'form': form::connvertThis();break;
-			case 'frame': frame::connvertThis();break;
-			case 'frameset': frameset::connvertThis();break;
-			case 'h1': ueberschrift::connvertThis();break;
-			case 'h2': ueberschrift::connvertThis();break;
-			case 'h3': ueberschrift::connvertThis();break;
-			case 'h4': ueberschrift::connvertThis();break;
-			case 'h5': ueberschrift::connvertThis();break;
-			case 'h6': ueberschrift::connvertThis();break;
-			case 'head': head::connvertThis();break;
-			case 'hr': hr::connvertThis();break;
-			case 'html': html::connvertThis();break;
-			case 'i': i::connvertThis();break;
-			case 'iframe': iframe::connvertThis();break;
-			case 'img': img::connvertThis();break;
-			case 'input': input::connvertThis();break;
-			case 'ins': ins::connvertThis();break;
-			case 'kbd': kbd::connvertThis();break;
-			case 'label': label::connvertThis();break;
-			case 'legend': legend::connvertThis();break;
-			case 'li': li::connvertThis();break;
-			case 'link': link::connvertThis();break;
-			case 'map': map::connvertThis();break;
-			case 'meta': meta::connvertThis();break;
-			case 'noframes': noframes::connvertThis();break;
-			case 'noscript': noscript::connvertThis();break;
-			case 'object': object::connvertThis();break;
-			case 'ol': ol::connvertThis();break;
-			case 'optgroup': optgroup::connvertThis();break;
-			case 'option': option::connvertThis();break;
-			case 'p': p::connvertThis();break;
-			case 'param': param::connvertThis();break;
-			case 'pre': pre::connvertThis();break;
-			case 'q': q::connvertThis();break;
-			case 'samp': samp::connvertThis();break;
-			case 'script': script::connvertThis();break;
-			case 'select': select::connvertThis();break;
-			case 'small': small::connvertThis();break;
-			case 'span': span::connvertThis();break;
-			case 'strong': strong::connvertThis();break;
-			case 'style': style::connvertThis();break;
-			case 'sub': sub::connvertThis();break;
-			case 'sup': sup::connvertThis();break;
-			case 'table': table::connvertThis();break;
-			case 'tbody': tbody::connvertThis();break;
-			case 'td': td::connvertThis();break;
-			case 'textarea': textarea::connvertThis();break;
-			case 'tfoot': tbody::connvertThis();break;
-			case 'th': th::connvertThis();break;
-			case 'thead': thead::connvertThis();break;
-			case 'title': title::connvertThis();break;
-			case 'tr': tr::connvertThis();break;
-			case 'tt': tt::connvertThis();break;
-			case 'ul': ul::connvertThis();break;
-			case 'ul': ul::connvertThis();break;
-			case 'htmlvar': htmlvar::connvertThis();break;
-			case 'xml': xml::connvertThis();break;
-			case 'nothing': nothing::connvertThis();break;
-			case 'innerText': innerText::connvertThis();break;	
-		}
-	}
+	/**
+	* Proof if it a number
+	* @param $input - The number that will be checked
+	* @return true,false
+	* @throwException Not a number
 	*/
-	
 	protected function zahlen($input)
 	{
 		try
@@ -246,31 +225,37 @@ abstract class first
 		}
 		return $input;
 	} 
-	
+
+	/**
+	* Make input to cdata
+	* @param $input - To change
+	* @return The changed cdata
+	*/	
 	protected function cdata($input)
 	{
-			/*$input = str_replace("<","&lt;",$input);
-			$input = str_replace(">","&gt;",$input);
-			$input = str_replace("\"","\\\"",$input);
-			//$input = htmlentities($input);
-			$input = str_replace("&amp;#","&#",$input);*/
 			$input = htmlentities($input);
 			$input = str_replace("&amp;","&",$input);
 			$input = str_replace("&amp;#","&#",$input);
 			return $input;
 	}
-	
+
+	/**
+	* Make input to cdataStrict
+	* @param $input - To change
+	* @return The changed cdataStrict
+	*/
 	protected function cdataStrict($input)
 	{
-			/*$input = str_replace("<","&lt;",$input);
-			$input = str_replace(">","&gt;",$input);
-			$input = str_replace("\"","\\\"",$input);
-			//$input = htmlentities($input);
-			$input = str_replace("&amp;#","&#",$input);*/
 			$input = htmlentities($input);
 			return $input;
 	}
 	
+	/**
+	* Proof if it idref
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a idref
+	*/
 	protected function idref($input)
 	{
 		$input = (string)$input;
@@ -289,100 +274,32 @@ abstract class first
 		}
 		return htmlentities($input);
 	}
-	
+
+	/**
+	* Change a string to cdata and change new line to <br>
+	* @param $input - The string that will be checked
+	* @return The changed string
+	*/
 	protected function nl3br ($input)
 	{
 		$input = $this->cdata($input);
 		return nl2br($input);
 	}
-	
+
+	/**
+	* Method to insert XML Objects
+	* @param $value - Should be a XML Object 
+	*/
 	public function insertxml($value)
 	{
 		$this->insert($value);
 	}
 
-/*	public function insertRaw($value)
-	{
-		if (is_object($value))
-		{
-			$this->temp .= $value->fertig;
-			$this->connvert($this);
-		}
-		else
-		{
-			if (is_array($value))
-			{
-				
-				foreach ($value as $wert)
-				{
-					$this->insertRaw($wert);
-				}
-				$this->connvert($this);
-				
-			}
-			else
-			{
-				$this->temp = $this->nl3br($value);
-				$this->connvert($this);
-			}
-		}
-		return true;
-	}
-	
-	public function insertnonconvert($value)
-	{
-		if (is_object($value))
-		{
-			$this->temp .= $value->fertig;
-			$this->connvert($this);
-		}
-		else
-		{
-			if (is_array($value))
-			{
-				
-				foreach ($value as $wert)
-				{
-					$this->insertnonconvert($wert);
-				}
-				$this->connvert($this);
-				
-			}
-			else
-			{
-				$this->temp .= html_entity_decode($value);
-				$this->connvert($this);
-			}
-		}
-		return true;
-	}
-	public function insertxml($value)
-	{
-		if (is_object($value))
-		{
-			$this->temp .= $value->fertig;
-			$this->connvert($this);
-		}
-		else
-		{
-			if (is_array($value))
-			{
-				
-				foreach ($value as $wert)
-				{
-					$this->insertxml($wert);
-				}
-				$this->connvert($this);
-				
-			}
-			else
-			{
-				$this->temp .= $value;
-				$this->connvert($this);
-			}
-		}
-		return true;
-	}
+	/**
+	* Proof if is shape
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a shape
 	*/
 	protected function is_shape ($input)
 	{
@@ -401,6 +318,12 @@ abstract class first
 		}
 		return $input;
 	}
+	/**
+	* Proof if is clear
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a clear
+	*/
 	protected function is_clear ($input)
 	{
 		try
@@ -418,6 +341,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is dir
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a dir
+	*/
 	protected function is_dir ($input)
 	{
 		try
@@ -435,6 +365,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is dataformatas
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a dataformatas
+	*/
 	protected function is_dataformatas ($input)
 	{
 		try
@@ -452,6 +389,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is inputtype
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a inputtype
+	*/
 	protected function is_inputtype($input)
 	{
 		try
@@ -468,7 +412,14 @@ abstract class first
 			die("<b>HTML Class Fault: </b>".$e->getMessage()." in <b>".$var[3][file]."</b> on line <b>".$var[3][line]."</b>\n<br />");
 		}
 		return $input;
-	}	
+	}
+	
+	/**
+	* Proof if is type
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a type
+	*/
 	protected function is_type ($input)
 	{
 		try
@@ -486,6 +437,13 @@ abstract class first
 		}
 		return $input;
 	}
+
+	/**
+	* Proof if is align
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a align
+	*/
 	protected function is_align ($input)
 	{
 		try
@@ -503,6 +461,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is valign
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a valign
+	*/
 	protected function is_valign ($input)
 	{
 		try
@@ -520,6 +485,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is compact
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a compact
+	*/
 	protected function is_compact ($input)
 	{
 		try
@@ -537,6 +509,13 @@ abstract class first
 		}
 		return $input;
 	}
+
+	/**
+	* Proof if is method
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a method
+	*/
 	protected function is_method ($input)
 	{
 		try
@@ -554,6 +533,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is border
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a border
+	*/
 	protected function is_border ($input)
 	{
 		try
@@ -571,6 +557,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is scrolling
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a scrolling
+	*/
 	protected function is_scrolling ($input)
 	{
 		try
@@ -588,6 +581,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is litype
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a litype
+	*/
 	protected function is_litype ($input)
 	{
 		try
@@ -605,6 +605,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is oltype
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a oltype
+	*/
 	protected function is_oltype ($input)
 	{
 		try
@@ -622,6 +629,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is ultype
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a ultype
+	*/
 	protected function is_ultype ($input)
 	{
 		try
@@ -639,6 +653,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is valuetype
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a valuetype
+	*/
 	protected function is_valuetype ($input)
 	{
 		try
@@ -656,6 +677,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is boolvalue
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a boolvalue
+	*/
 	protected function is_boolvalue ($input) 
 	{
 		try
@@ -673,6 +701,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is frame
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a frame
+	*/
 	protected function is_frame ($input)
 	{
 		try
@@ -690,6 +725,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is rules
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a rules
+	*/
 	protected function is_rules ($input)
 	{
 		try
@@ -707,6 +749,13 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Proof if is scope
+	* @param $input - The string that will be checked
+	* @return The changed string
+	* @throwException Not a scope
+	*/
 	protected function is_scope ($input)
 	{
 		try
@@ -724,6 +773,12 @@ abstract class first
 		}
 		return $input;
 	}
+	
+	/**
+	* Change the HTML Code a little bit so that there
+	* it looks better in the source code
+	* @param $indent - How much space
+	*/
 	protected function formatHTML($indent = 0)
 	{
 		
@@ -769,6 +824,10 @@ abstract class first
 		$this->_htmlCode = $temp;
 	}
 	
+	/**
+	* Important Methode - it generate the HTML code and send it
+	* to the client.
+	*/
 	public function echoHTML() {  
 		$this->convertThis();
 		$this->formatHTML(); 
@@ -777,6 +836,10 @@ abstract class first
 
 }
 
+/**
+* Class that represent a XML object
+* It extends from first
+*/
 class xml extends first
 {
 	private $_xmlobject = NULL;
@@ -823,6 +886,9 @@ class xml extends first
 	public function setFirstLine($extra) {$this->_xmlextra = $extra."\n"; }
 	public function deleteFirstLine() {$this->_xmlextra = NULL; }
 	
+	/**
+	* Generate the XML Code with all objects that are in this XML object
+	*/
 	protected function convertThis()
 	{
 		if ($this->_xmlkopf !== NULL) 
@@ -854,6 +920,13 @@ class xml extends first
 	}
 }
 
+/**
+* Class that not really a usable class
+* It is for give all HTML objects with dir and lang attributes
+* this attributes.
+* It extends from first
+* @throwException wrong __set element
+*/
 class checkInput extends first
 {
 	protected $_dir = NULL;
@@ -904,6 +977,11 @@ class checkInput extends first
 
 }
 
+/**
+* Class that not really a usable class
+* It is for give all HTML objects with this here defined attributes
+* It extends from checkInput
+*/
 class attribute extends checkInput
 {
 	protected $_class = NULL;
@@ -1004,6 +1082,11 @@ class attribute extends checkInput
 	}
 }
 
+/**
+* Class that represent a HTML Object with nothing.
+* Simple text for example can add here. It is a
+* little bit redundant with innerText
+*/
 class nothing extends first
 {
 	public function __construct($z = NULL) { 
@@ -1035,6 +1118,9 @@ class nothing extends first
 	}
 }
 
+/**
+* This class represent a body tag in HTML 
+*/
 class body extends attribute
 {
 	private $_alink = NULL;
@@ -1116,6 +1202,9 @@ class body extends attribute
 	}
 }
 
+/**
+* This class represent a html tag in HTML 
+*/
 class html extends checkInput
 {
 	private $_version = NULL;
@@ -1171,6 +1260,9 @@ class html extends checkInput
 		
 	}
 
+	/**
+	* This method generate a hole html site and give it to the user
+	*/
 	public function echoHTML() {
 		$this->convertThis();
 		$this->formatHTML(); 
@@ -1179,6 +1271,11 @@ class html extends checkInput
 	}
 }
 
+/**
+* Class that represent a HTML Object with text in it.
+* Simple text for example can add here. It is a
+* little bit redundant with nothing
+*/
 class innerText extends first
 {
 	public function __construct($text = null) {
