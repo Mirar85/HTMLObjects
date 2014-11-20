@@ -9,6 +9,7 @@
  *
  * @author Ulf Wohlers - Chilan.de
  * @package de\chilan\HtmlObjects
+ * @version Beta 1.0.0.001
  */
  
 namespace de\chilan\HtmlObjects;
@@ -42,6 +43,9 @@ abstract class first
 	protected $_htmlCode = NULL;
 	protected $_domObject = null;
 	
+	// The number of the last insert object in the domObject array
+	protected $_lastInsertObject = null; 
+	
 	abstract protected function convertThis();	
 	abstract public function __set($element,$x);
 	abstract public function __get($elemen);
@@ -54,6 +58,14 @@ abstract class first
 		if ($this->_domObject === null) {
 			$this->_domObject = new htmlobjectlist();
 		}
+	}
+	
+	/**
+	* Give the last insert domObject back
+	* @return Last insert DomObject
+	*/
+	public function getLastInsertObject() {
+		return $this->_domObject->get($this->_lastInsertObject);
 	}
 	
 	/**
@@ -100,10 +112,12 @@ abstract class first
 					}
 					else if ($this->checkIfHTMLObject($wert)) {
 						$this->_domObject->add($wert);
+						$this->_lastInsertObject = $this->_domObject->getSize()-1;
 					}
 				}
 		} else if ($this->checkIfHTMLObject($object)) {
 			$this->_domObject->add($object);
+			$this->_lastInsertObject = $this->_domObject->getSize()-1;
 		}
 	}
 
@@ -135,11 +149,13 @@ abstract class first
 					}
 					else if ($this->checkIfHTMLObject($wert)) {
 						$this->_domObject->addAfter($wert,$x+$y);
+						$this->_lastInsertObject = $x+1;
 						$y++;
 					}
 				}
 		} else if ($this->checkIfHTMLObject($object)) {
 			$this->_domObject->addAfter($object,$x);
+			$this->_lastInsertObject = $x+1;
 		} 
 	}
 

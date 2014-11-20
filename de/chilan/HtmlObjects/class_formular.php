@@ -1,8 +1,21 @@
 <?php
+/**
+ * In this file there are all HTML class you can use for formulars
+ *
+ * Follow classes are in this file: button, form, input,
+ * label, legend, optgroup, option, select,textarea
+ *
+ * @author Ulf Wohlers - Chilan.de
+ * @package de\chilan\HtmlObjects
+ */
+ 
 namespace de\chilan\HtmlObjects;
 
 use \Exception as Exception;
 
+/**
+* Class button with its attributes
+*/
 class button extends attribute
 {
 	private $_accesskey = NULL;
@@ -98,6 +111,9 @@ class button extends attribute
 	}
 }
 
+/**
+* Class fieldset with its attributes
+*/
 class fieldset extends Attribute
 {
 	public function __construct($z = NULL) { 
@@ -135,6 +151,9 @@ class fieldset extends Attribute
 	}
 }
 
+/**
+* Class form with its attributes
+*/
 class form extends attribute
 {
 	private $_action = "";
@@ -220,6 +239,9 @@ class form extends attribute
 	}
 }
 
+/**
+* Class input with its attributes
+*/
 class input extends attribute
 {
 	private $_accept = NULL;
@@ -370,6 +392,9 @@ class input extends attribute
 	}
 }
 
+/**
+* Class label with its attributes
+*/
 class label extends attribute
 {
 	private $_accesskey = NULL;
@@ -430,6 +455,9 @@ class label extends attribute
 	}
 }
 
+/**
+* Class legend with its attributes
+*/
 class legend extends attribute
 {
 	private $_accesskey = NULL;
@@ -481,6 +509,9 @@ class legend extends attribute
 	}
 }
 
+/**
+* Class optgroup with its attributes
+*/
 class optgroup extends attribute
 {
 	private $_disabled = false;
@@ -532,6 +563,9 @@ class optgroup extends attribute
 	}
 }
 
+/**
+* Class option with its attributes
+*/
 class option extends attribute
 {
 	private $_disabled = false;
@@ -592,6 +626,9 @@ class option extends attribute
 	}
 }
 
+/**
+* Class select with its attributes
+*/
 class select extends attribute
 {
 	private $_disabled = false;
@@ -689,6 +726,9 @@ class select extends attribute
 	}
 }
 
+/**
+* Class textarea with its attributes
+*/
 class textarea extends attribute
 {
 	private $_accesskey = NULL;
